@@ -1,0 +1,19 @@
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+vendor
+# Ignorowanie zależności Ruby
+.bundle/
+
+# Ignorowanie zależności Bundlera
+vendor/
+
+# Ignorowanie plików i folderów zależnych od lokalnego środowiska
+*.gem
+
+
+
+# Pliki tymczasowe
+*.log
+*.tmp

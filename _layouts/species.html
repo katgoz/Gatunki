@@ -1,0 +1,189 @@
+---
+layout: default
+---
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.name }}</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1>{{ page.name }}</h1>
+    </header>
+
+    <main>
+        <div class="content">
+            <div class="sidebar" data-bs-spy="scroll" data-bs-target="#main-content" data-bs-offset="20">
+                <h2>Spis treści</h2>
+                <ul>
+                    <li><a href="#taxonomy">Taksonomia</a></li>
+                    <li><a href="#sequencing">Zsekwencjonowane zasoby</a></li>
+                    <li><a href="#description">Opis gatunku</a></li>
+                </ul>
+            </div>
+
+            <div class="main-content" id="main-content">
+                <!-- Sekcja Taksonomia -->
+                <div id="taxonomy">
+                    <h2 class="section-title">Taksonomia</h2>
+                    <ul>
+                        {% if page.family %}
+                            <li><strong>Rodzina:</strong> {{ page.family.name }}</li>
+                        {% endif %}
+                        {% if page.order %}
+                            <li><strong>Rząd:</strong> {{ page.order.name }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Sekcja Zsekwencjonowane zasoby -->
+                <div id="sequencing">
+                    <h2 class="section-title">Zsekwencjonowane zasoby</h2>
+                    {% if page.samples %}
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Typ danych</th>
+                                    <th>Osobnik</th>
+                                    <th>Bazy</th>
+                                    <th>Pokrycie</th>
+                                    <th>Rozmiar</th>
+                                    <th>Link do zasobów</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sample in page.samples %}
+                                    <tr>
+                                        <td>{{ sample.datatype }}</td>
+                                        <td>{{ sample.individual }}</td>
+                                        <td>{{ sample.bases }}</td>
+                                        <td>{{ sample.coverage }}</td>
+                                        <td>{{ sample.bytes }}</td>
+                                        <td><a href="{{ sample.url }}" target="_blank">Link</a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>Brak danych o próbkach.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Sekcja Opis -->
+                <div id="description">
+                    <h2 class="section-title">Opis gatunku</h2>
+                    <div>{{ content }}</div>
+                </div>
+
+		<!-- Dodaj komentarz -->
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#commentModal">
+                    Dodaj komentarz
+                </button>
+
+                <!-- Modal formularza komentarza -->
+                <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="commentModalLabel">Dodaj komentarz</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="commentForm">
+                                    <div class="mb-3">
+                                        <label for="speciesName" class="form-label">Nazwa gatunku</label>
+                                        <input type="text" class="form-control" id="speciesName" value="{{ page.name }}" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="commentText" class="form-label">Komentarz</label>
+                                        <textarea class="form-control" id="commentText" rows="3" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Adres e-mail</label>
+                                        <input type="email" class="form-control" id="email" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                                <button type="button" class="btn btn-primary" id="submitComment">Wyślij komentarz</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zdjęcie i Atrybucja -->
+                <div class="image">
+                    <img src="{{ page.image }}" alt="{{ page.name }}">
+                    <p>{{ page.image_attribution }}</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Ikony społecznościowe -->
+    <div class="social-media">
+        <a href="#" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" target="_blank" class="social-icon"><i class="fab fa-pinterest"></i></a>
+        <a href="#" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+    </div>
+
+    <!-- Wstaw skrypty JS Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Inicjalizacja ScrollSpy
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                const scrollSpy = new bootstrap.ScrollSpy(document.body, {
+                    target: '.sidebar',
+                    offset: 20
+                });
+            }
+
+            // Przewijanie i aktywacja linków
+            window.addEventListener('scroll', function() {
+                const links = document.querySelectorAll('.sidebar a');
+                let foundActive = false;
+                let highestSection = null;
+
+                links.forEach(link => {
+                    const targetId = link.getAttribute('href').substring(1); // Usunięcie # z href
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        const rect = targetElement.getBoundingClientRect();
+
+                        // Warunek, by aktywować tylko sekcję, która jest najwyżej położona
+                        if (rect.top <= window.innerHeight / 2 && rect.bottom >= 0) {
+                            if (!foundActive || rect.top < highestSection.top) {
+                                highestSection = rect;
+                                foundActive = link;
+                            }
+                        }
+                    }
+                });
+
+                // Usuwamy klasę 'active' dla wszystkich linków
+                links.forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                // Dodajemy klasę 'active' tylko dla najwyżej położonej sekcji
+                if (foundActive) {
+                    foundActive.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
