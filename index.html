@@ -31,7 +31,7 @@ title: "Gatunki"
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             {% for species in site.species %}
-                            <li><a class="dropdown-item" href="{{ species.url }}">{{ species.common_name }}</a></li>
+                            <li><a class="dropdown-item" href="{{ site.baseurl }}{{ species.url }}">{{ species.common_name }}</a></li>
                             {% endfor %}
                         </ul>
                     </li>
